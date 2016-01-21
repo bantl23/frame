@@ -4,6 +4,8 @@ import (
 	"errors"
 )
 
+// FrameItem struct contains the information
+// to get and set frame sub elements
 type FrameItem struct {
 	BitLoc   uint64
 	BitLen   uint64
@@ -13,11 +15,17 @@ type FrameItem struct {
 	mask     uint64
 }
 
+// Frame struct contains a list of frame
+// items to mimic a complete data frame
 type Frame struct {
 	Name  string
 	Items map[string]*FrameItem
 }
 
+// NewFrameItem creates and initializes
+// a new frame item struct by receiving
+// bitLoc (bit start location) and bitLen
+// (number of bits).
 func NewFrameItem(bitLoc uint64, bitLen uint64) *FrameItem {
 	f := new(FrameItem)
 	f.BitLoc = bitLoc
@@ -35,6 +43,9 @@ func NewFrameItem(bitLoc uint64, bitLen uint64) *FrameItem {
 	return f
 }
 
+// NewFrame creates and initializes
+// a new frame which contains an
+// empty list of frame items
 func NewFrame(name string) *Frame {
 	f := new(Frame)
 	f.Name = name
@@ -42,6 +53,7 @@ func NewFrame(name string) *Frame {
 	return f
 }
 
+// GetUint64 obtains a value from a data byte array
 func (f FrameItem) GetUint64(data []byte) (uint64, error) {
 	if (f.byteLoc + f.byteLen) <= uint64(len(data)) {
 		val := uint64(0)
@@ -55,6 +67,7 @@ func (f FrameItem) GetUint64(data []byte) (uint64, error) {
 	}
 }
 
+// SetUint64 assigns a value to a data byte array
 func (f FrameItem) SetUint64(data []byte, val uint64) error {
 	if (f.byteLoc + f.byteLen) <= uint64(len(data)) {
 		val = (val & f.mask) << f.shiftAmt
@@ -68,10 +81,12 @@ func (f FrameItem) SetUint64(data []byte, val uint64) error {
 	}
 }
 
+// GetUint64 obtains a value from a data byte array using frame item name
 func (f Frame) GetUint64(name string, data []byte) (uint64, error) {
 	return f.Items[name].GetUint64(data)
 }
 
+// SetUint64 assigns a value to a data byte array using a frame item name
 func (f Frame) SetUint64(name string, data []byte, val uint64) error {
 	return f.Items[name].SetUint64(data, val)
 }
